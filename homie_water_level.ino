@@ -1,11 +1,19 @@
 
 #include <Homie.h>
+#include <fsbrowser.h>
 
 #define TRIG D1
 #define ECHO D2
 
 #define UPDATE_INTERVAL 60
-#define TANK_DEPTH 200  // Depth of the tank in cm
+#define TANK_DEPTH 180  // Depth of the tank in cm
+
+#define FW_NAME "tankdepth"
+#define FW_VERSION "1.0.2"
+/* Magic sequence for Autodetectable Binary Upload */
+const char *__FLAGGED_FW_NAME = "\xbf\x84\xe4\x13\x54" FW_NAME "\x93\x44\x6b\xa7\x75";
+const char *__FLAGGED_FW_VERSION = "\x6a\x3f\x3e\x0e\xe1" FW_VERSION "\xb0\x30\x48\xd4\x1a";
+/* End of magic sequence for Autodetectable Binary Upload */
 
 HomieNode levelNode("depth", "depth");
 
@@ -14,13 +22,15 @@ unsigned long lastUpdate = 0 ;
 void setup() {
   Serial.begin(115200);
   Homie.setLoopFunction(loopHandler);
-  Homie.setFirmware("tankdepth", "1.0.0");
+  Homie.setFirmware(FW_NAME, FW_VERSION);
   
   Homie.setNodeProperty(levelNode, "unit", "m", true);
 
   Homie.registerNode(levelNode);  
 
   Homie.setup();
+
+  fsSetup();
 }
 
 void loopHandler() {
@@ -34,6 +44,7 @@ void loopHandler() {
 void loop() {
   // put your main code here, to run repeatedly:
   Homie.loop();
+  fsLoop();
 }
 
 float getDepth() {
