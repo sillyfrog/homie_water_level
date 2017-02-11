@@ -6,16 +6,15 @@
 #define ECHO D2
 
 #define UPDATE_INTERVAL 60
-#define TANK_DEPTH 180  // Depth of the tank in cm
 
 #define FW_NAME "tankdepth"
-#define FW_VERSION "1.0.2"
+#define FW_VERSION "2.0.0"
 /* Magic sequence for Autodetectable Binary Upload */
 const char *__FLAGGED_FW_NAME = "\xbf\x84\xe4\x13\x54" FW_NAME "\x93\x44\x6b\xa7\x75";
 const char *__FLAGGED_FW_VERSION = "\x6a\x3f\x3e\x0e\xe1" FW_VERSION "\xb0\x30\x48\xd4\x1a";
 /* End of magic sequence for Autodetectable Binary Upload */
 
-HomieNode levelNode("depth", "depth");
+HomieNode levelNode("distance", "distance");
 
 unsigned long lastUpdate = 0 ;
 
@@ -35,8 +34,8 @@ void setup() {
 
 void loopHandler() {
   if (millis() - lastUpdate >= UPDATE_INTERVAL * 1000UL || lastUpdate == 0) {
-    float depth = getDepth();
-    Homie.setNodeProperty(levelNode, "depth", String(depth), true);
+    float distance = getDistance();
+    Homie.setNodeProperty(levelNode, "distance", String(distance), true);
     lastUpdate = millis();
   }
 }
@@ -47,7 +46,7 @@ void loop() {
   fsLoop();
 }
 
-float getDepth() {
+float getDistance() {
   float results[5];
   int i = 0;
   float reading;
@@ -75,17 +74,7 @@ float getDepth() {
   
   avg = avg / i;
 
-  Serial.print("getDepth avg distance measured: ");
-  Serial.println(avg);
-  
-  avg = TANK_DEPTH - avg;
-
-  if (avg < 1) {
-    Serial.println("avg < 1!");
-    avg = 1;
-  }
-
-  Serial.print("getDepth tank depth measured: ");
+  Serial.print("getDistance avg distance measured: ");
   Serial.println(avg);
   
   return avg;
