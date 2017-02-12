@@ -1,0 +1,6 @@
+// A sample OpenHAB2 items config file, assuming OpenHAB is using Mosquitto as the MQTT server.
+// This file should be placed in your items directory.
+// It also requires the included js file for the transformation from distance to 
+// kilo-litres.
+
+Number waterTankLitres 		"Water Tank [%.2f kL]"      <water>                     [ "WaterTank" ] {mqtt="<[mosquitto:devices/watertank/distance/distance:state:JS(tankleveltolitres.js)]"}
